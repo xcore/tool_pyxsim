@@ -1,0 +1,16 @@
+# Copyright (c) 2011, XMOS Ltd, All rights reserved
+# This software is freely distributable under a derivative of the
+# University of Illinois/NCSA Open Source License posted in
+# LICENSE.txt and at <http://github.xcore.com/>
+
+from pyxsim import *
+
+if __name__ == "__main__":
+    xsi = Xsi("../app_pyxsim_example/bin/XC-1/app_pyxsim_example.xe")
+    plugin = XsiLoopbackPlugin(core="stdcore[0]",
+                               from_port="XS1_PORT_1A",
+                               to_port="XS1_PORT_1B")
+    xsi.register_plugin(plugin)    
+    xsi.run()
+    xsi.terminate()
+
