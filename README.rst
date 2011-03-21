@@ -1,5 +1,5 @@
-<title>
-.......
+PyXsim
+............
 
 :Stable release:  unreleased 
 
