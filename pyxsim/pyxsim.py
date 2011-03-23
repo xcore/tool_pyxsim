@@ -3,8 +3,10 @@
 # University of Illinois/NCSA Open Source License posted in
 # LICENSE.txt and at <http://github.xcore.com/>
 
-import os, re
+import os, re, struct
 from ctypes import cdll, byref, c_void_p, c_char_p, c_int, create_string_buffer
+from xe import Xe
+
 
 xsi_lib_path = os.path.abspath(os.environ['XCC_EXEC_PREFIX'] + '../lib/libxsidevice.so')
 
@@ -65,9 +67,13 @@ XsiStatus = EnumExceptionSet(['OK',
 
 
 class Xsi(object):
-    def __init__(self, xe_path):  
+    def __init__(self, xe_path=None, xe=None):  
         self.xsim = c_void_p()
-        args = c_char_p(xe_path)    
+        if xe:
+          self.xe = xe
+        else:
+          self.xe = Xe(xe_path)
+        args = c_char_p(self.xe.path)    
         status = xsi_lib.xsi_create(byref(self.xsim), args)
         self._plugins = []
         
@@ -146,17 +152,32 @@ class Xsi(object):
       XsiStatus.error_if_not_valid(status)
       return c_value.value    
 
-    def read_mem(core, address, num_bytes):
+    def read_mem(self, core, address, num_bytes, return_ctype=False):
       c_core = c_char_p(core)    
       c_address = c_int(address)
       c_num_bytes = c_int(num_bytes)
       buf = create_string_buffer(num_bytes)
       status = xsi_lib.xsi_read_mem(self.xsim, c_core, c_address,
                                     c_num_bytes, buf)
-      XsiStatus.error_if_not_valid(status)      
-      return buf.value
+      XsiStatus.error_if_not_valid(status)    
+      if return_ctype:
+        return buf
+      else:
+        return list(buf)
 
-    def write_mem(core, address, num_bytes, data):
+    def read_symbol_word(self, core, symbol, offset=0):
+      address = self.xe.symtab[core, symbol]
+      address += offset
+      buf = self.read_mem(core, address, 4, return_ctype=True)
+      return struct.unpack("<I",buf)
+
+    def read_symbol_byte(self, core, symbol, offset=0):
+      address = self.xe.symtab[core, symbol]
+      address += offset
+      buf = self.read_mem(core, address, 1, return_ctype=True)
+      return ord(buf[0])
+
+    def write_mem(self, core, address, num_bytes, data):
       c_core = c_char_p(core)    
       c_address = c_int(address)
       c_num_bytes = c_int(num_bytes)
@@ -164,8 +185,20 @@ class Xsi(object):
       status = xsi_lib.xsi_write_mem(self.xsim, c_core, c_address,
                                     c_num_bytes, buf)
       XsiStatus.error_if_not_valid(status)      
+
+    def write_symbol_word(self, core, symbol, value, offset=0):
+      address = self.xe.symtab[core, symbol]
+      address += offset
+      data = struct.pack("<I",value)
+      self.write_mem(core, address, 4, data)
+
+    def write_symbol_byte(self, core, symbol, value, offset=0):
+      address = self.xe.symtab[core, symbol]
+      address += offset
+      data = struct.pack("<c",value)
+      self.write_mem(core, address, 1, data)
     
-    def read_pswitch_reg(core, reg_num):
+    def read_pswitch_reg(self, core, reg_num):
       c_core = c_char_p(core)    
       c_reg_num = c_int(reg_num)
       c_value = c_int()
@@ -175,7 +208,7 @@ class Xsi(object):
       return c_value.value
 
 
-    def write_pswitch_reg(core, reg_num, value):
+    def write_pswitch_reg(self, core, reg_num, value):
       c_core = c_char_p(core)    
       c_reg_num = c_int(reg_num)
       c_value = c_int(value)

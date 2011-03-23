@@ -18,22 +18,18 @@ APP_NAME =
 # If the variable XCC_MAP_FLAGS is set it overrides the flags passed to 
 # xcc for the final link (mapping) stage.
 
-XCC_FLAGS = -O2 -g $(EXTRA_FLAGS)
+XCC_FLAGS = 
 
 # The USED_MODULES variable lists other module used by the application. 
 
 USED_MODULES = 
 
-
-
-#=============================================================================
-
-
 #=============================================================================
 # The following part of the Makefile includes the common build infrastructure
 # for compiling XMOS applications. You should not need to edit below here.
 
-# Use the latest 1v* version of module_xmos_common
+
+# Use the main Makefile from module_xmos_common
 -include ../module_xmos_common/build/Makefile.common
 -include ../../xcommon/module_xcommon/build/Makefile.common
 
@@ -45,10 +41,5 @@ USED_MODULES =
 all: $(BIN_DIR)/$(APP_NAME).xe
 	@echo Build Complete
 
+
 clean: clean_common
-
-EXECUTABLE=bin/XC-1/app_uart_test.xe
- 
-
-test:
-	xsim $(ARGUMENT) $(EXECUTABLE) --plugin LoopbackPort.dll '-xe $(EXECUTABLE) -port stdcore[0] XS1_PORT_1A 1 0 -port stdcore[0] XS1_PORT_1B 1 0'
