@@ -26,7 +26,6 @@ Known Issues
 ============
 
 * Doesn't yet work on windows
-* Only works on 32 bit linux (due to the XMOS tools dll)
 
 Required Repositories
 =====================
