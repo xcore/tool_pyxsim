@@ -19,8 +19,7 @@ Key Features
 To Do
 =====
 
-* Extend to work with the plugin API as well as the testbench
-* Implement a value passing mechanism between testbench and simulator
+* Extend to work with the xsim plugin API as well as the xsim testbench api
 
 Known Issues
 ============
