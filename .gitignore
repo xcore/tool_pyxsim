@@ -1,5 +1,5 @@
 .project
 .cproject
 *.pyc
-.build*
-
+.build
+app_pyxsim_example/bin/

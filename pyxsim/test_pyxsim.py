@@ -6,11 +6,11 @@
 from pyxsim import *
 
 if __name__ == "__main__":
-    xsi = Xsi("../app_pyxsim_example/bin/XC-1/app_pyxsim_example.xe")
+    xsi = Xsi("../app_pyxsim_example/bin/app_pyxsim_example.xe")
     loopback_plugin = XsiLoopbackPlugin(core="stdcore[0]",
                                         from_port="XS1_PORT_1A",
                                         to_port="XS1_PORT_1B")
-    xsi.register_plugin(loopback_plugin)    
+    xsi.register_plugin(loopback_plugin)
 
     # Write 100 to global variable 'extra' which gets added to 'value'
     xsi.write_symbol_word('stdcore[0]', 'extra', 100)
